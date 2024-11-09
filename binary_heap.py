@@ -47,21 +47,23 @@ class BinaryHeap:
             self.heap[index], self.heap[smallest] = self.heap[smallest], self.heap[index]
             self._heapify_down(smallest)
 
+    def get_size(self):
+        return len(self.heap)
 
 # Example Usage
 heap = BinaryHeap()
 
 # Insert elements
-heap.insert(3)
-heap.insert(2)
-heap.insert(15)
-heap.insert(5)
-heap.insert(4)
-heap.insert(45)
+# heap.insert(3)
+# heap.insert(2)
+# heap.insert(15)
+# heap.insert(5)
+# heap.insert(4)
+# heap.insert(45)
 
-print("Minimum element in the heap:", heap.get_min())
-
-# Delete minimum element
-print("Deleted minimum element:", heap.delete_min())
-
-print("Minimum element in the heap after deletion:", heap.get_min())
+# print("Minimum element in the heap:", heap.get_min())
+#
+# # Delete minimum element
+# print("Deleted minimum element:", heap.delete_min())
+#
+# print("Minimum element in the heap after deletion:", heap.get_min())

@@ -1,7 +1,8 @@
 # class to implement node of RB Tree
 class RBNode:
-        # cnostructor
-    def __init__(self, value, color='red'):
+        # constructor
+    def __init__(self, value, key, color='red'):
+        self.key = key
         self.value = value
         self.color = color
         self.left = None
@@ -49,9 +50,9 @@ class RedBlackTree:
         return None
 
     # function to insert a node in RB Tree, similar to BST insertion
-    def insert(self, value):
+    def insert(self, value, key):
         # Regular insertion
-        new_node = RBNode(value)
+        new_node = RBNode(value, key)
         if self.root is None:
             self.root = new_node
         else:
@@ -231,11 +232,19 @@ class RedBlackTree:
         return node
 
     # function to perform inorder traversal
-    def _inorder_traversal(self, node):
+    def _inorder_traversal(self, node, nodes_list):
         if node is not None:
-            self._inorder_traversal(node.left)
-            print(node.value, end=" ")
-            self._inorder_traversal(node.right)
+            self._inorder_traversal(node.left, nodes_list)
+            nodes_list.append(node)
+            self._inorder_traversal(node.right, nodes_list)
+            # print(node.value, node.key,  end="\n")
+
+
+    def get_all_nodes_inorder(self):
+        nodes_list = []
+        self._inorder_traversal(self.root, nodes_list)
+        return nodes_list
+
 
 
 # Example driver code
