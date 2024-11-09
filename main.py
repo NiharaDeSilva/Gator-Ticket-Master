@@ -22,9 +22,11 @@ def reserve(userID, userPriority):
         seatID = seats.get_min()
         reservation.insert(userID, seatID)
         seats.delete_min()
+        print("User ", userID, "reserved seat", seatID)
     # else:
-        # create a record in waitlist, with user priority
-    print("User ", userID, "reserved seat", seatID)
+    #     # create a record in waitlist, with user priority
+    #
+
 
 def available():
     print ("Total Seats Available :", seats.get_size(), " Waitlist" )
@@ -55,10 +57,11 @@ def cancel(seatID, userID):
 #Add seats to the available seat list. The new seat numbers should follow the previously available range.
 def addSeats(count):
     global seat_count
-    total = seat_count + count+1
+    total = seat_count + count
     for i in range(seat_count, total):
         seats.insert(i)
     seat_count = total
+    print(f"Additional {count} Seats are made available for reservation")
 
 
 def getAllReservations():
@@ -76,7 +79,13 @@ def printReservations():
 def releaseSeats(userID1, userID2):
     #seats reservaed users
     for userID in range(userID1, userID2):
+        #get seatId of UserID assign to seatID
+        re = reservation.search(userID)
+        if re is not None:
+            seatID = re.key
+            seats.insert(seatID)
         reservation.delete(userID)
+    print(f"Reservations/waitlist of the users in the range {userID1, userID2} have been released")
     #Users in the waitlist
 
 
@@ -114,5 +123,6 @@ if __name__ == '__main__':
     cancel(1, 8)
     available()
     releaseSeats(8, 10)
+    available()
     printReservations()
     quit()
