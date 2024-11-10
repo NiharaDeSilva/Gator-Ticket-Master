@@ -5,8 +5,8 @@ class BinaryHeap:
     def is_empty(self):
         return len(self.heap) == 0
 
-    def insert(self, key):
-        self.heap.append(key)
+    def insert(self, key, value=None):
+        self.heap.append((key, value))
         self._heapify_up(len(self.heap) - 1)
 
     def _heapify_up(self, index):
@@ -47,8 +47,47 @@ class BinaryHeap:
             self.heap[index], self.heap[smallest] = self.heap[smallest], self.heap[index]
             self._heapify_down(smallest)
 
+    """Search for an item by key in the heap and return its index or -1 if not found."""
+    def search(self, key):
+        for i, item in enumerate(self.heap):
+            if item[0] == key:
+                return i
+        return -1
+
+    """Delete an element by key from the heap."""
+    def delete(self, key):
+        index = self.search(key)
+        if index == -1:
+            return
+        # Swap the element with the last element and remove the last element
+        self.heap[index], self.heap[-1] = self.heap[-1], self.heap[index]
+        removed_element = self.heap.pop()
+
+        # Restore the heap property
+        if index < len(self.heap):
+            self._heapify_down(index)
+            self._heapify_up(index)
+        return removed_element
+
+    """Update an element's key and value in the heap."""
+    def update(self, key, new_value=None):
+        index = self.search(key)
+        if index == -1:
+            return
+        # Update the key and value
+        self.heap[index] = (key, new_value)
+        # Restore the heap property
+        if index > 0 and self.heap[index][0] < self.heap[(index - 1) // 2][0]:
+            self._heapify_up(index)
+        else:
+            self._heapify_down(index)
+
     def get_size(self):
         return len(self.heap)
+
+    """Return a copy of all items in the heap."""
+    def get_items(self):
+        return list(self.heap)
 
 # Example Usage
 heap = BinaryHeap()
