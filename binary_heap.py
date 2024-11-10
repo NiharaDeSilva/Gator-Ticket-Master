@@ -89,20 +89,4 @@ class BinaryHeap:
     def get_items(self):
         return list(self.heap)
 
-# Example Usage
-heap = BinaryHeap()
 
-# Insert elements
-# heap.insert(3)
-# heap.insert(2)
-# heap.insert(15)
-# heap.insert(5)
-# heap.insert(4)
-# heap.insert(45)
-
-# print("Minimum element in the heap:", heap.get_min())
-#
-# # Delete minimum element
-# print("Deleted minimum element:", heap.delete_min())
-#
-# print("Minimum element in the heap after deletion:", heap.get_min())
