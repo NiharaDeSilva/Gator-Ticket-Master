@@ -176,75 +176,64 @@ class RedBlackTree:
     # Function for left rotation of RB Tree
 
     def delete_fix(self, x):
-        while x != self.root and x.color == 'black':
-            if x == x.parent.left:
-                sibling = x.sibling()
-                if sibling is None:  # Safeguard against sibling being None
-                    x = x.parent
-                    continue  # Safely move to the parent node and retry the loop
+        while x != self.root and x is not None and x.color == 'black':
+            if x.parent:
+                if x == x.parent.left:
+                    sibling = x.sibling()
+                else:
+                    sibling = x.sibling()
+
+                if sibling is None:
+                    break  # Exit if there is no sibling
 
                 if sibling.color == 'red':
                     sibling.color = 'black'
                     x.parent.color = 'red'
-                    self.rotate_left(x.parent)
+                    if x == x.parent.left:
+                        self.rotate_left(x.parent)
+                    else:
+                        self.rotate_right(x.parent)
                     sibling = x.sibling()
 
-                if (sibling is None or
-                    (sibling.left is None or (sibling.left and sibling.left.color == 'black')) and
-                    (sibling.right is None or (sibling.right and sibling.right.color == 'black'))):
-                    if sibling:  # Check if sibling is not None before changing its color
-                        sibling.color = 'red'
-                    x = x.parent
+                if sibling and (sibling.left is None or sibling.left.color == 'black') and \
+                   (sibling.right is None or sibling.right.color == 'black'):
+                    sibling.color = 'red'
+                    x = x.parent  # Move up the tree
                 else:
-                    if sibling.right is None or (sibling.right and sibling.right.color == 'black'):
-                        if sibling.left:
-                            sibling.left.color = 'black'
-                        sibling.color = 'red'
-                        self.rotate_right(sibling)
-                        sibling = x.sibling()
-
                     if sibling:
-                        sibling.color = x.parent.color
-                    x.parent.color = 'black'
-                    if sibling and sibling.right:
-                        sibling.right.color = 'black'
-                    self.rotate_left(x.parent)
-                    x = self.root
+                        if x == x.parent.left:
+                            if sibling.right is None or sibling.right.color == 'black':
+                                if sibling.left:
+                                    sibling.left.color = 'black'
+                                sibling.color = 'red'
+                                self.rotate_right(sibling)
+                                sibling = x.sibling()
+
+                            sibling.color = x.parent.color
+                            x.parent.color = 'black'
+                            if sibling.right:
+                                sibling.right.color = 'black'
+                            self.rotate_left(x.parent)
+                        else:
+                            if sibling.left is None or sibling.left.color == 'black':
+                                if sibling.right:
+                                    sibling.right.color = 'black'
+                                sibling.color = 'red'
+                                self.rotate_left(sibling)
+                                sibling = x.sibling()
+
+                            sibling.color = x.parent.color
+                            x.parent.color = 'black'
+                            if sibling.left:
+                                sibling.left.color = 'black'
+                            self.rotate_right(x.parent)
+
+                    x = self.root  # Ensure the loop ends after balancing the tree
             else:
-                sibling = x.sibling()
-                if sibling is None:  # Safeguard against sibling being None
-                    x = x.parent
-                    continue  # Safely move to the parent node and retry the loop
+                break  # Exit if x.parent is None (safety check)
 
-                if sibling.color == 'red':
-                    sibling.color = 'black'
-                    x.parent.color = 'red'
-                    self.rotate_right(x.parent)
-                    sibling = x.sibling()
-
-                if (sibling is None or
-                    (sibling.left is None or (sibling.left and sibling.left.color == 'black')) and
-                    (sibling.right is None or (sibling.right and sibling.right.color == 'black'))):
-                    if sibling:  # Check if sibling is not None before changing its color
-                        sibling.color = 'red'
-                    x = x.parent
-                else:
-                    if sibling.left is None or (sibling.left and sibling.left.color == 'black'):
-                        if sibling.right:
-                            sibling.right.color = 'black'
-                        sibling.color = 'red'
-                        self.rotate_left(sibling)
-                        sibling = x.sibling()
-
-                    if sibling:
-                        sibling.color = x.parent.color
-                    x.parent.color = 'black'
-                    if sibling and sibling.left:
-                        sibling.left.color = 'black'
-                    self.rotate_right(x.parent)
-                    x = self.root
-        x.color = 'black'
-
+        if x:
+            x.color = 'black'
 
 
     def rotate_left(self, node):

@@ -31,7 +31,7 @@ def reserve(userID, userPriority):
 
 
 def available():
-    print (f"Total Seats Available : {seats.get_size()} Waitlist :{waitlist.get_size()}" )
+    print(f"Total Seats Available : {seats.get_size()} Waitlist :{waitlist.get_size()}" )
 
 def cancel(seatID, userID):
     userReservation = reservation.search(userID)
@@ -102,43 +102,46 @@ def addSeats(count):
 def getAllReservations():
     reservation_list = []
     reservation._inorder_traversal(reservation.root, reservation_list)
-    reservation_list.sort(key=lambda x: x.key)
+    # sorted_list = sorted(reservation_list, key=lambda x: x.key[0])
     return reservation_list
 
 def printReservations():
     reservation_list = getAllReservations()
     for reservation in reservation_list:
-        print(f"Seat {reservation.key[0]}, User {reservation.value}")
+        print(f"Seat {reservation.key}, User {reservation.value}")
 
 #
 def releaseSeats(userID1, userID2):
-    if userID1 > 0:
+    if userID1 > 0: #Check this
         for userID in range(userID1, userID2):
-            #get seatId of UserID assign to seatID
-            re = reservation.search(userID)
-            if re is not None:
-                seatID = re.key
-                seats.insert(seatID[0])
-                print(userID)
+            re = reservation.search(userID).key
+            print(f"re {re}")
+            if re[0] is not None:
+                seatID = re[0]
+                seats.insert(seatID)
                 reservation.delete(userID)
         print(f"Reservations/waitlist of the users in the range {userID1, userID2} have been released")
-        #seats reserved users
-        list = sortWaitlitsbyPriority()
-        if not waitlist.is_empty():
-            for user in enumerate(list):
-                seatID = seats.get_min()
-                reservation.insert(user[0], seatID)
-                seats.delete_min()
-                print(f"User {user[0]} reserved seat {seatID}")
+        assignSeatsToWaitlist()
     else:
         print("Invalid input. Please provide a valid range of users.")
+
+
+
+def assignSeatsToWaitlist():
+    if not waitlist.is_empty():
+        sortedList = sortWaitlitsbyPriority()
+        for index, (user, priority) in enumerate(sortedList, start=1):
+            seatID = seats.get_min()
+            reservation.insert(user, seatID[0])
+            seats.delete_min()
+            waitlist.delete(user)
+            print(f"User {user} reserved seat {seatID[0]}")
 
 
 
 def quit():
     print("Program Terminated")
     sys.exit(0)
-
 
 
 # Press the green button in the gutter to run the script.
@@ -152,7 +155,6 @@ if __name__ == '__main__':
     cancel(2, 4)
     reserve(1, 1)
     available()
-    # getAllReservations()
     printReservations()
     reserve(3, 1)
     reserve(2, 2)
@@ -160,14 +162,15 @@ if __name__ == '__main__':
     available()
     cancel(1, 1)
     cancel(3, 5)
+    printReservations()
     available()
     reserve(11, 1)
     reserve(9, 2)
-    addSeats(2)
+    # addSeats(2)
     reserve(7, 2)
     cancel(1, 8)
     available()
-    releaseSeats(8, 10)
+    # releaseSeats(8, 10)
     available()
-    printReservations()
+    # printReservations()
     quit()
