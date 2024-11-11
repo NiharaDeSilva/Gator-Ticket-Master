@@ -75,8 +75,43 @@ class RedBlackTree:
         self.insert_fix(new_node)
 
     # Function to fix RB tree properties after insertion
+    # def insert_fix(self, new_node):
+    #     while new_node.parent and new_node.parent.color == 'red':
+    #         if new_node.parent == new_node.grandparent().left:
+    #             uncle = new_node.uncle()
+    #             if uncle and uncle.color == 'red':
+    #                 new_node.parent.color = 'black'
+    #                 uncle.color = 'black'
+    #                 new_node.grandparent().color = 'red'
+    #                 new_node = new_node.grandparent()
+    #             else:
+    #                 if new_node == new_node.parent.right:
+    #                     new_node = new_node.parent
+    #                     self.rotate_left(new_node)
+    #                 new_node.parent.color = 'black'
+    #                 new_node.grandparent().color = 'red'
+    #                 self.rotate_right(new_node.grandparent())
+    #         else:
+    #             uncle = new_node.uncle()
+    #             if uncle and uncle.color == 'red':
+    #                 new_node.parent.color = 'black'
+    #                 uncle.color = 'black'
+    #                 new_node.grandparent().color = 'red'
+    #                 new_node = new_node.grandparent()
+    #             else:
+    #                 if new_node == new_node.parent.left:
+    #                     new_node = new_node.parent
+    #                     self.rotate_right(new_node)
+    #                 new_node.parent.color = 'black'
+    #                 new_node.grandparent().color = 'red'
+    #                 self.rotate_left(new_node.grandparent())
+    #     self.root.color = 'black'
+
     def insert_fix(self, new_node):
         while new_node.parent and new_node.parent.color == 'red':
+            if new_node.grandparent() is None:  # Check if grandparent exists
+                break
+
             if new_node.parent == new_node.grandparent().left:
                 uncle = new_node.uncle()
                 if uncle and uncle.color == 'red':
@@ -89,8 +124,9 @@ class RedBlackTree:
                         new_node = new_node.parent
                         self.rotate_left(new_node)
                     new_node.parent.color = 'black'
-                    new_node.grandparent().color = 'red'
-                    self.rotate_right(new_node.grandparent())
+                    if new_node.grandparent():  # Check before accessing
+                        new_node.grandparent().color = 'red'
+                        self.rotate_right(new_node.grandparent())
             else:
                 uncle = new_node.uncle()
                 if uncle and uncle.color == 'red':
@@ -103,10 +139,10 @@ class RedBlackTree:
                         new_node = new_node.parent
                         self.rotate_right(new_node)
                     new_node.parent.color = 'black'
-                    new_node.grandparent().color = 'red'
-                    self.rotate_left(new_node.grandparent())
+                    if new_node.grandparent():  # Check before accessing
+                        new_node.grandparent().color = 'red'
+                        self.rotate_left(new_node.grandparent())
         self.root.color = 'black'
-
     # function to delete a value from RB Tree
     def delete(self, value):
         node_to_remove = self.search(value)
@@ -120,6 +156,7 @@ class RedBlackTree:
         else:
             successor = self._find_min(node_to_remove.right)
             node_to_remove.value = successor.value
+            node_to_remove.key = successor.key
             self._replace_node(successor, successor.right)
 
         self.delete_fix(node_to_remove)
@@ -276,15 +313,30 @@ class RedBlackTree:
         node.parent = left_child
 
     # function to replace an old node with a new node
+    # def _replace_node(self, old_node, new_node):
+    #     if old_node.parent is None:
+    #         self.root = new_node
+    #     else:
+    #         if old_node == old_node.parent.left:
+    #             old_node.parent.left = new_node
+    #         else:
+    #             old_node.parent.right = new_node
+    #     if new_node is not None:
+    #         new_node.parent = old_node.parent
+
     def _replace_node(self, old_node, new_node):
         if old_node.parent is None:
+            # `old_node` is the root; replace the root with `new_node`
             self.root = new_node
         else:
+            # Update the parent's left or right pointer to `new_node`
             if old_node == old_node.parent.left:
                 old_node.parent.left = new_node
             else:
                 old_node.parent.right = new_node
+
         if new_node is not None:
+            # Ensure `new_node` has the same parent as `old_node`
             new_node.parent = old_node.parent
 
     # function to find node with minimum value in a subtree
