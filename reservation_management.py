@@ -1,382 +1,166 @@
-# class to implement node of RB Tree
-class RBNode:
-        # constructor
-    def __init__(self, value, key, color='red'):
-        self.key = key
-        self.value = value
-        self.color = color
-        self.left = None
-        self.right = None
-        self.parent = None
+import sys
+import time
+from waitlist import Waitlist
+from seat_list import SeatList
+from reservation_list import ReservationList
 
-    # function to get the grandparent of node
-    def grandparent(self):
-        if self.parent is None:
-            return None
-        return self.parent.parent
+'''
+This program uses a Red Black Tree and a Binary Min Heap to implement the seat reservation and waiting list system for Gator Ticket Master.
+Supported commands are Initialize, Available, Reserve, Cancel, ExitWaitList, UpdatePriority, AddSeats, PrintReservations, ReleaseSeats, Quit.
+'''
 
-    # function to get the sibling of node
-    def sibling(self):
-        if self.parent is None:
-            return None
-        if self == self.parent.left:
-            return self.parent.right
-        return self.parent.left
-
-    # function to get the uncle of node
-    def uncle(self):
-        if self.parent is None:
-            return None
-        return self.parent.sibling()
-
-# function to implement Red Black Tree
+seats = SeatList()
+reservation = ReservationList()
+waitlist = Waitlist()
 
 
-class RedBlackTree:
-        # constructor to initialize the RB tree
-    def __init__(self):
-        self.root = None
+# Keep Track of the total seats allocated for Users
+seat_count=0
 
-    # function to search a value in RB Tree
-    def search(self, value):
-        curr_node = self.root
-        while curr_node is not None:
-            if value == curr_node.value:
-                return curr_node
-            elif value < curr_node.value:
-                curr_node = curr_node.left
+# Initialize a number of seats
+def initialize(count):
+    global seat_count
+    if count > 0:
+        for i in range(1, count + 1):
+            seats.add_seats(i)
+        print(count, "seats are made available for reservation")
+        seat_count = count
+        # return seat_count
+    else:
+        print("Invalid input. Please provide a valid number of seats.")
+        # return -1
+
+# Reserve a seat, pass the user ID and priority
+def reserve(userID, userPriority):
+    if not seats.is_empty_seats():
+        seatID = seats.get_first_available_seat()
+        reservation.make_reservation(userID, seatID)
+        seats.assign_seat()
+        print(f"User {userID} reserved seat {seatID}")
+        return reservation
+    else:
+        timestamp = time.time()
+        waitlist.add_to_waitlist(userID, userPriority, timestamp)     # create a record in waitlist, with user priority
+        print(f"User {userID} is added to the waiting list")
+        return waitlist
+
+
+# Print the available seats and number of users in the waitlist
+def available():
+    print(f"Total Seats Available : {seats.get_seat_count()}, Waitlist :{waitlist.get_size()}")
+
+
+# Cancel reservation if user has reserved a seat and user ID matches the seat ID
+def cancel(seatID, userID):
+    if (reservation.search_reservation(userID) is not None):
+        result = reservation.search_reservation(userID)
+        if result.key == seatID:
+            if waitlist.is_empty():
+                reservation.remove_reservation(userID)
+                seats.add_seats(seatID)
+                print(f"User {userID} canceled their reservation")
             else:
-                curr_node = curr_node.right
-        return None
-
-    # function to insert a node in RB Tree, similar to BST insertion
-    def insert(self, value, key):
-        # Regular insertion
-        new_node = RBNode(value, key)
-        if self.root is None:
-            self.root = new_node
-        else:
-            curr_node = self.root
-            while True:
-                if value < curr_node.value:
-                    if curr_node.left is None:
-                        curr_node.left = new_node
-                        new_node.parent = curr_node
-                        break
-                    else:
-                        curr_node = curr_node.left
-                else:
-                    if curr_node.right is None:
-                        curr_node.right = new_node
-                        new_node.parent = curr_node
-                        break
-                    else:
-                        curr_node = curr_node.right
-        self.insert_fix(new_node)
-
-    # Function to fix RB tree properties after insertion
-    # def insert_fix(self, new_node):
-    #     while new_node.parent and new_node.parent.color == 'red':
-    #         if new_node.parent == new_node.grandparent().left:
-    #             uncle = new_node.uncle()
-    #             if uncle and uncle.color == 'red':
-    #                 new_node.parent.color = 'black'
-    #                 uncle.color = 'black'
-    #                 new_node.grandparent().color = 'red'
-    #                 new_node = new_node.grandparent()
-    #             else:
-    #                 if new_node == new_node.parent.right:
-    #                     new_node = new_node.parent
-    #                     self.rotate_left(new_node)
-    #                 new_node.parent.color = 'black'
-    #                 new_node.grandparent().color = 'red'
-    #                 self.rotate_right(new_node.grandparent())
-    #         else:
-    #             uncle = new_node.uncle()
-    #             if uncle and uncle.color == 'red':
-    #                 new_node.parent.color = 'black'
-    #                 uncle.color = 'black'
-    #                 new_node.grandparent().color = 'red'
-    #                 new_node = new_node.grandparent()
-    #             else:
-    #                 if new_node == new_node.parent.left:
-    #                     new_node = new_node.parent
-    #                     self.rotate_right(new_node)
-    #                 new_node.parent.color = 'black'
-    #                 new_node.grandparent().color = 'red'
-    #                 self.rotate_left(new_node.grandparent())
-    #     self.root.color = 'black'
-
-    def insert_fix(self, new_node):
-        while new_node.parent and new_node.parent.color == 'red':
-            if new_node.grandparent() is None:  # Check if grandparent exists
-                break
-
-            if new_node.parent == new_node.grandparent().left:
-                uncle = new_node.uncle()
-                if uncle and uncle.color == 'red':
-                    new_node.parent.color = 'black'
-                    uncle.color = 'black'
-                    new_node.grandparent().color = 'red'
-                    new_node = new_node.grandparent()
-                else:
-                    if new_node == new_node.parent.right:
-                        new_node = new_node.parent
-                        self.rotate_left(new_node)
-                    new_node.parent.color = 'black'
-                    if new_node.grandparent():  # Check before accessing
-                        new_node.grandparent().color = 'red'
-                        self.rotate_right(new_node.grandparent())
-            else:
-                uncle = new_node.uncle()
-                if uncle and uncle.color == 'red':
-                    new_node.parent.color = 'black'
-                    uncle.color = 'black'
-                    new_node.grandparent().color = 'red'
-                    new_node = new_node.grandparent()
-                else:
-                    if new_node == new_node.parent.left:
-                        new_node = new_node.parent
-                        self.rotate_right(new_node)
-                    new_node.parent.color = 'black'
-                    if new_node.grandparent():  # Check before accessing
-                        new_node.grandparent().color = 'red'
-                        self.rotate_left(new_node.grandparent())
-        self.root.color = 'black'
-    # function to delete a value from RB Tree
-    def delete(self, value):
-        node_to_remove = self.search(value)
-
-        if node_to_remove is None:
-            return
-
-        if node_to_remove.left is None or node_to_remove.right is None:
-            self._replace_node(
-                node_to_remove, node_to_remove.left or node_to_remove.right)
-        else:
-            successor = self._find_min(node_to_remove.right)
-            node_to_remove.value = successor.value
-            node_to_remove.key = successor.key
-            self._replace_node(successor, successor.right)
-
-        self.delete_fix(node_to_remove)
-
-    # function to fix RB Tree properties after deletion
-    # def delete_fix(self, x):
-    #     while x != self.root and x.color == 'black':
-    #         if x == x.parent.left:
-    #             sibling = x.sibling()
-    #             if sibling.color == 'red':
-    #                 sibling.color = 'black'
-    #                 x.parent.color = 'red'
-    #                 self.rotate_left(x.parent)
-    #                 sibling = x.sibling()
-    #             if (sibling.left is None or sibling.left.color == 'black') and (sibling.right is None or sibling.right.color == 'black'):
-    #                 sibling.color = 'red'
-    #                 x = x.parent
-    #             else:
-    #                 if sibling.right is None or sibling.right.color == 'black':
-    #                     sibling.left.color = 'black'
-    #                     sibling.color = 'red'
-    #                     self.rotate_right(sibling)
-    #                     sibling = x.sibling()
-    #                 sibling.color = x.parent.color
-    #                 x.parent.color = 'black'
-    #                 if sibling.right:
-    #                     sibling.right.color = 'black'
-    #                 self.rotate_left(x.parent)
-    #                 x = self.root
-    #         else:
-    #             sibling = x.sibling()
-    #             if sibling.color == 'red':
-    #                 sibling.color = 'black'
-    #                 x.parent.color = 'red'
-    #                 self.rotate_right(x.parent)
-    #                 sibling = x.sibling()
-    #             if (sibling.left is None or sibling.left.color == 'black') and (sibling.right is None or sibling.right.color == 'black'):
-    #                 sibling.color = 'red'
-    #                 x = x.parent
-    #             else:
-    #                 if sibling.left is None or sibling.left.color == 'black':
-    #                     sibling.right.color = 'black'
-    #                     sibling.color = 'red'
-    #                     self.rotate_left(sibling)
-    #                     sibling = x.sibling()
-    #                 sibling.color = x.parent.color
-    #                 x.parent.color = 'black'
-    #                 if sibling.left:
-    #                     sibling.left.color = 'black'
-    #                 self.rotate_right(x.parent)
-    #                 x = self.root
-    #     x.color = 'black'
-
-    # Function for left rotation of RB Tree
-
-    def delete_fix(self, x):
-        while x != self.root and x is not None and x.color == 'black':
-            if x.parent:
-                if x == x.parent.left:
-                    sibling = x.sibling()
-                else:
-                    sibling = x.sibling()
-
-                if sibling is None:
-                    break  # Exit if there is no sibling
-
-                if sibling.color == 'red':
-                    sibling.color = 'black'
-                    x.parent.color = 'red'
-                    if x == x.parent.left:
-                        self.rotate_left(x.parent)
-                    else:
-                        self.rotate_right(x.parent)
-                    sibling = x.sibling()
-
-                if sibling and (sibling.left is None or sibling.left.color == 'black') and \
-                   (sibling.right is None or sibling.right.color == 'black'):
-                    sibling.color = 'red'
-                    x = x.parent  # Move up the tree
-                else:
-                    if sibling:
-                        if x == x.parent.left:
-                            if sibling.right is None or sibling.right.color == 'black':
-                                if sibling.left:
-                                    sibling.left.color = 'black'
-                                sibling.color = 'red'
-                                self.rotate_right(sibling)
-                                sibling = x.sibling()
-
-                            sibling.color = x.parent.color
-                            x.parent.color = 'black'
-                            if sibling.right:
-                                sibling.right.color = 'black'
-                            self.rotate_left(x.parent)
-                        else:
-                            if sibling.left is None or sibling.left.color == 'black':
-                                if sibling.right:
-                                    sibling.right.color = 'black'
-                                sibling.color = 'red'
-                                self.rotate_left(sibling)
-                                sibling = x.sibling()
-
-                            sibling.color = x.parent.color
-                            x.parent.color = 'black'
-                            if sibling.left:
-                                sibling.left.color = 'black'
-                            self.rotate_right(x.parent)
-
-                    x = self.root  # Ensure the loop ends after balancing the tree
-            else:
-                break  # Exit if x.parent is None (safety check)
-
-        if x:
-            x.color = 'black'
-
-
-    def rotate_left(self, node):
-        right_child = node.right
-        node.right = right_child.left
-
-        if right_child.left is not None:
-            right_child.left.parent = node
-
-        right_child.parent = node.parent
-
-        if node.parent is None:
-            self.root = right_child
-        elif node == node.parent.left:
-            node.parent.left = right_child
-        else:
-            node.parent.right = right_child
-
-        right_child.left = node
-        node.parent = right_child
-
-    # function for right rotation of RB Tree
-    def rotate_right(self, node):
-        left_child = node.left
-        node.left = left_child.right
-
-        if left_child.right is not None:
-            left_child.right.parent = node
-
-        left_child.parent = node.parent
-
-        if node.parent is None:
-            self.root = left_child
-        elif node == node.parent.right:
-            node.parent.right = left_child
-        else:
-            node.parent.left = left_child
-
-        left_child.right = node
-        node.parent = left_child
-
-    # function to replace an old node with a new node
-    # def _replace_node(self, old_node, new_node):
-    #     if old_node.parent is None:
-    #         self.root = new_node
-    #     else:
-    #         if old_node == old_node.parent.left:
-    #             old_node.parent.left = new_node
-    #         else:
-    #             old_node.parent.right = new_node
-    #     if new_node is not None:
-    #         new_node.parent = old_node.parent
-
-    def _replace_node(self, old_node, new_node):
-        if old_node.parent is None:
-            # `old_node` is the root; replace the root with `new_node`
-            self.root = new_node
-        else:
-            # Update the parent's left or right pointer to `new_node`
-            if old_node == old_node.parent.left:
-                old_node.parent.left = new_node
-            else:
-                old_node.parent.right = new_node
-
-        if new_node is not None:
-            # Ensure `new_node` has the same parent as `old_node`
-            new_node.parent = old_node.parent
-
-    # function to find node with minimum value in a subtree
-    def _find_min(self, node):
-        while node.left is not None:
-            node = node.left
-        return node
-
-    # function to perform inorder traversal
-    def _inorder_traversal(self, node, nodes_list):
-        if node is not None:
-            self._inorder_traversal(node.left, nodes_list)
-            nodes_list.append(node)
-            self._inorder_traversal(node.right, nodes_list)
-            # print(node.value, node.key,  end="\n")
-
-
-    def get_all_nodes_inorder(self):
-        nodes_list = []
-        self._inorder_traversal(self.root, nodes_list)
-        return nodes_list
+                reservation.remove_reservation(userID)
+                new_userID = waitlist.sort_waitlist_by_priority()[0]
+                reservation.make_reservation(new_userID[0], seatID)
+                waitlist.drop_from_waitlist(new_userID[0])
+                print(f"User {userID} canceled their reservation")
+                print(f"User {new_userID[0]} reserved seat {seatID}")
+        elif ((reservation.search_reservation(userID).value != None) and (reservation.search_reservation(userID).key != seatID)):
+            print(f"User {userID} has no reservation for seat {seatID} to cancel")
+    else:
+        print(f"User {userID} has no reservation to cancel")
 
 
 
-# Example driver code
-# if __name__ == "__main__":
-    # tree = RedBlackTree()
-    # tree.insert(10)
-    # tree.insert(20)
-    # tree.insert(30)
-    # tree.insert(40)
-    # tree.insert(50)
-    # tree.insert(25)
-    #
-    # print("Inorder traversal of the Red-Black Tree:")
-    # tree._inorder_traversal(tree.root)
-    # print()
-    #
-    # tree.delete(20)
-    #
-    # print("Inorder traversal of the Red-Black Tree after deleting 20")
-    # tree._inorder_traversal(tree.root)
-    # print()
+# Add seats to the available seat list
+def addSeats(count):
+    global seat_count
+    if count > 0:
+        total = seat_count + count
+        for i in range(seat_count + 1, total + 1):
+            seats.add_seats(i)
+        seat_count = total
+        print(f"Additional {count} Seats are made available for reservation")
+        assignSeatsToWaitlist(count)
+    else:
+        print(f"Invalid input. Please provide a valid number of seats.")
+
+
+# Print the reservations ordered by seat number
+def printReservations():
+    reservation_list = reservation.getAllReservations()
+    for item in reservation_list:
+        print(f"Seat {item.key}, User {item.value}")
+
+
+
+# Release seats of users in the user ID range given, if seats have been reserved.
+# If users are in waitlist release from waitlist
+def releaseSeats(userID1, userID2):
+    if userID1 > 0: #Check this
+        reservations_released = False
+        waitlist_released = False
+        count = 0
+        for userID in range(userID1, userID2):
+            if reservation.search_reservation(userID) is not None:
+                result = reservation.search_reservation(userID)
+                seatID = result.key
+                seats.add_seats(seatID)
+                reservation.remove_reservation(userID)
+                count += 1
+                reservations_released = True
+            elif waitlist.search(userID) is not None:
+                waitlist.drop_from_waitlist(userID)
+                waitlist_released = True
+        if reservations_released:
+            print(f"Reservations of the users in the range {userID1, userID2} have been released")
+        elif waitlist_released:
+            print(f"Waitlist of the users in the range {userID1, userID2} have been released")
+        newReservations = assignSeatsToWaitlist(count)
+        return newReservations
+    else:
+        print("Invalid input. Please provide a valid range of users.")
+        return
+
+
+# If the user wants to exit the waitlist
+def exitWaitlist(userID):
+    if waitlist.search(userID) is not None:
+        waitlist.drop_from_waitlist(userID)
+        print(f"User {userID} is removed from the waiting list")
+    else:
+        print(f"User {userID} is not in waitlist")
+
+
+
+# Update the user priority if user is in waitlist
+def updatePriority(userID, userPriority):
+    priority_updated = waitlist.update_priority(userID, userPriority)
+    if priority_updated:
+        print(f"User {userID} priority has been updated to {userPriority}")
+    else:
+        print(f"User {userID} priority is not updated")
+
+
+
+# Assign seats to users in waitlist if seats are available
+def assignSeatsToWaitlist(count):
+    while (count >= 0) and (not waitlist.is_empty()):
+        sortedList = waitlist.sort_waitlist_by_priority()
+        for index, (user, priority, timeStamp) in enumerate(sortedList, start=1):
+            seatID = seats.get_first_available_seat()
+            if seatID is not None:
+                reservation.make_reservation(user, seatID)
+                seats.assign_seat()
+                waitlist.remove_from_waitlist()
+                print(f"User {user} reserved seat {seatID}")
+            count -= 1
+    return reservation
+
+
+def quit():
+    print("Program Terminated!!")
+    sys.exit(0)
+
+
