@@ -2,7 +2,7 @@ from binary_min_heap import BinaryMinHeap
 
 '''
 Class to manage the Waitlist extending the Binary Min Heap class
-Supports initialization, search, add to waitlist, remove from waitlist, update priority, drop_from_waitlist, 
+Supports initialization, search, add to waitlist, remove from waitlist, modify priority, drop_from_waitlist, 
 get waitlist, get size and sort waitlist by priority functions.
 '''
 class Waitlist(BinaryMinHeap):
@@ -44,7 +44,7 @@ class Waitlist(BinaryMinHeap):
             return False
 
     #Update priority of User
-    def update_priority(self, userID, new_priority):
+    def modify_priority(self, userID, new_priority):
         search_result = self.search(userID)
         if search_result:
             index, (user, priority, timeStamp) = search_result

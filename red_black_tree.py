@@ -289,11 +289,6 @@ class RedBlackTree:
             nodes_list.append(node)
             self.inorder_traversal(node.right, nodes_list)
 
-    # Get all nodes inorder
-    def get_all_nodes_inorder(self):
-        nodes_list = []
-        self.inorder_traversal(self.root, nodes_list)
-        return nodes_list
 
 
 

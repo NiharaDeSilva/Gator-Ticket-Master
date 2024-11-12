@@ -1,6 +1,7 @@
 from red_black_tree import RedBlackTree
 '''
 Class to manage seats, extending the Binary Min Heap class
+Supports initialization, search reservation, make reservation, remove reservation, get all reservations functions
 '''
 
 class ReservationList(RedBlackTree):
@@ -16,8 +17,7 @@ class ReservationList(RedBlackTree):
     def remove_reservation(self, userID):
         return self.delete(userID)
 
-
-    def getAllReservations(self):
+    def get_all_reservations(self):
         reservation_list = []
         self.inorder_traversal(self.root, reservation_list)
         sorted_list = sorted(reservation_list, key=lambda x: x.key)

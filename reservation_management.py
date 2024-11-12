@@ -25,10 +25,10 @@ def initialize(count):
             seats.add_seats(i)
         print(count, "seats are made available for reservation")
         seat_count = count
-        # return seat_count
+        return seat_count
     else:
         print("Invalid input. Please provide a valid number of seats.")
-        # return -1
+        return -1
 
 # Reserve a seat, pass the user ID and priority
 def reserve(userID, userPriority):
@@ -74,7 +74,7 @@ def cancel(seatID, userID):
 
 
 # Add seats to the available seat list
-def addSeats(count):
+def add_seats(count):
     global seat_count
     if count > 0:
         total = seat_count + count
@@ -82,22 +82,23 @@ def addSeats(count):
             seats.add_seats(i)
         seat_count = total
         print(f"Additional {count} Seats are made available for reservation")
-        assignSeatsToWaitlist(count)
+        assign_seats_to_waitlist(count)
     else:
         print(f"Invalid input. Please provide a valid number of seats.")
 
 
 # Print the reservations ordered by seat number
-def printReservations():
-    reservation_list = reservation.getAllReservations()
+def print_reservations():
+    reservation_list = reservation.get_all_reservations()
     for item in reservation_list:
         print(f"Seat {item.key}, User {item.value}")
 
 
-
-# Release seats of users in the user ID range given, if seats have been reserved.
-# If users are in waitlist release from waitlist
-def releaseSeats(userID1, userID2):
+'''
+Release seats of users in the user ID range given, if seats have been reserved.
+If users are in waitlist release from waitlist
+'''
+def release_seats(userID1, userID2):
     if userID1 > 0: #Check this
         reservations_released = False
         waitlist_released = False
@@ -117,7 +118,7 @@ def releaseSeats(userID1, userID2):
             print(f"Reservations of the users in the range {userID1, userID2} have been released")
         elif waitlist_released:
             print(f"Waitlist of the users in the range {userID1, userID2} have been released")
-        newReservations = assignSeatsToWaitlist(count)
+        newReservations = assign_seats_to_waitlist(count)
         return newReservations
     else:
         print("Invalid input. Please provide a valid range of users.")
@@ -125,7 +126,7 @@ def releaseSeats(userID1, userID2):
 
 
 # If the user wants to exit the waitlist
-def exitWaitlist(userID):
+def exit_waitlist(userID):
     if waitlist.search(userID) is not None:
         waitlist.drop_from_waitlist(userID)
         print(f"User {userID} is removed from the waiting list")
@@ -135,8 +136,8 @@ def exitWaitlist(userID):
 
 
 # Update the user priority if user is in waitlist
-def updatePriority(userID, userPriority):
-    priority_updated = waitlist.update_priority(userID, userPriority)
+def update_priority(userID, userPriority):
+    priority_updated = waitlist.modify_priority(userID, userPriority)
     if priority_updated:
         print(f"User {userID} priority has been updated to {userPriority}")
     else:
@@ -145,7 +146,7 @@ def updatePriority(userID, userPriority):
 
 
 # Assign seats to users in waitlist if seats are available
-def assignSeatsToWaitlist(count):
+def assign_seats_to_waitlist(count):
     while (count >= 0) and (not waitlist.is_empty()):
         sortedList = waitlist.sort_waitlist_by_priority()
         for index, (user, priority, timeStamp) in enumerate(sortedList, start=1):
