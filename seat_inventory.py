@@ -4,7 +4,7 @@ Class to manage seats inheriting the Binary Min Heap
 Supports initialization, check empty, adding seats, get first available seat and assign seat and get seat count functions 
 '''
 
-class SeatList(BinaryMinHeap):
+class SeatInventory(BinaryMinHeap):
     def __init__(self):
         super().__init__()
 

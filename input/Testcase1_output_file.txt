@@ -26,7 +26,7 @@ User 7 is added to the waiting list
 User 8 canceled their reservation
 User 7 reserved seat 1
 Total Seats Available : 0, Waitlist :1
-Reservations of the users in the range (8, 10) have been released
+Reservations of the Users in the range (8, 10) have been released
 User 11 reserved seat 6
 Seat 1, User 7
 Seat 2, User 1

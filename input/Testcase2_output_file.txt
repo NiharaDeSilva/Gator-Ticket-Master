@@ -9,7 +9,7 @@ User 4 reserved seat 3
 User 7 reserved seat 6
 User 8 reserved seat 7
 User 66 reserved seat 8
-Reservations of the users in the range (10, 100) have been released
+Reservations of the Users in the range (10, 100) have been released
 User 52 reserved seat 4
 User 41 reserved seat 8
 User 13 reserved seat 9
@@ -19,7 +19,7 @@ User 15 is added to the waiting list
 User 121 is added to the waiting list
 User 161 is added to the waiting list
 User 180 is added to the waiting list
-User 15 priority has been updated to 2
+User 15 Priority has been updated to 2
 User 72 is added to the waiting list
 User 81 is added to the waiting list
 User 66 is added to the waiting list

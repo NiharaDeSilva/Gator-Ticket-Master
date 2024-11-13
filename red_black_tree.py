@@ -1,39 +1,4 @@
 '''
-Data structure for node of Red Black Tree
-'''
-
-class RedBlackNode:
-    def __init__(self, value, key, color='red'):
-        self.value = value
-        self.key = key
-        self.color = color
-        self.left = None
-        self.right = None
-        self.parent = None
-
-    # Get the grandparent of node
-    def grandparent(self):
-        if self.parent is None:
-            return None
-        return self.parent.parent
-
-    # Get the sibling of node
-    def sibling(self):
-        if self.parent is None:
-            return None
-        if self == self.parent.left:
-            return self.parent.right
-        return self.parent.left
-
-    # Get the parent's sibling of node
-    def parents_sibling(self):
-        if self.parent is None:
-            return None
-        return self.parent.sibling()
-
-
-
-'''
 Data structure for Red Black Tree inheriting attributes and functions from RedBlack Node class.
 Supports initialization, search, insertion, deletion, find minimum, in order traversal, right and left rotations and fixing consecutive 
 red node problem and black node problem after every insert and delete.
@@ -42,33 +7,34 @@ class RedBlackTree:
     def __init__(self):
         self.root = None
 
-    # Search a value in Red Black Tree
-    def search(self, value):
+    # Search a for a node using the key in Red Black Tree
+    def search(self, key):
         current_node = self.root
         while current_node is not None:
-            if value == current_node.value:
+            if key == current_node.key:
                 return current_node
-            elif value < current_node.value:
+            elif key < current_node.key:
                 current_node = current_node.left
             else:
                 current_node = current_node.right
         return None
 
     '''
-    Inserts a new node with the specified value and key into the Red-Black Tree.
+    Inserts a new node with the specified key into the Red-Black Tree.
     First, it performs a standard binary search tree insertion. It finds the correct position for the new node by 
-    comparing its value to existing nodes, moving left if the value is smaller or right if it’s larger, 
+    comparing its key to existing nodes, moving left if the key is smaller or right if it’s larger, 
     and attaches the new node as a left or right child as needed.
-    After insertion, it calls `insert_fix` to enforce Red-Black Tree properties,
+    After insertion, it calls `insert_correction` to enforce Red-Black Tree properties
     '''
-    def insert(self, value, key):
-        new_node = RedBlackNode(value, key)
+    def insert(self, node_value):
+        new_node = RedBlackNode(node_value)
+        key = node_value[0]
         if self.root is None:
             self.root = new_node
         else:
             current_node = self.root
             while True:
-                if value < current_node.value:
+                if key < current_node.key:
                     if current_node.left is None:
                         current_node.left = new_node
                         new_node.parent = current_node
@@ -82,14 +48,14 @@ class RedBlackTree:
                         break
                     else:
                         current_node = current_node.right
-        self.insert_fix(new_node)
+        self.insert_correction(new_node)
 
     '''
      Fixes any violations of Red-Black Tree properties after an insertion.
      This function ensures that the tree maintains balanced properties by recoloring nodes or rotating the tree as necessary, 
      depending on the color of the nodes and their relatives.
     '''
-    def insert_fix(self, new_node):
+    def insert_correction(self, new_node):
         while new_node.parent and new_node.parent.color == 'red':
             if new_node.grandparent() is None:
                 break
@@ -127,12 +93,12 @@ class RedBlackTree:
         self.root.color = 'black'
 
     '''
-    Deletes a node with the specified value from the Red-Black Tree. First finds the node, then either removes it directly 
+    Deletes a node with the specified key from the Red-Black Tree. First finds the node, then either removes it directly 
     if it has at most one child, or swaps it with its in-order successor if it has two children.
-    Finally, it calls delete_fix to restore Red-Black Tree properties
+    Finally, it calls delete_correction to restore Red-Black Tree properties
     '''
-    def delete(self, value):
-        node_to_remove = self.search(value)
+    def delete(self, key):
+        node_to_remove = self.search(key)
         if node_to_remove is None:
             return
 
@@ -141,18 +107,18 @@ class RedBlackTree:
                 node_to_remove, node_to_remove.left or node_to_remove.right)
         else:
             successor = self.find_min(node_to_remove.right)
-            node_to_remove.value = successor.value
             node_to_remove.key = successor.key
+            node_to_remove.value = successor.value
             self.replace_node(successor, successor.right)
 
-        self.delete_fix(node_to_remove)
+        self.delete_correction(node_to_remove)
 
     '''
     Fixes any violations of Red-Black Tree properties after a deletion. 
     This function ensures that the tree remains balanced and adheres to Red-Black rules. 
     It recolors or rotates nodes based on the color of the sibling and its children, depending on the child deleted.
     '''
-    def delete_fix(self, x):
+    def delete_correction(self, x):
         while x != self.root and x is not None and x.color == 'black':
             if x.parent:
                 if x == x.parent.left:
@@ -276,7 +242,7 @@ class RedBlackTree:
         if new_node is not None:
             new_node.parent = old_node.parent
 
-    # Find node with minimum value in a subtree
+    # Find node with minimum key in a subtree
     def find_min(self, node):
         while node.left is not None:
             node = node.left
@@ -290,5 +256,37 @@ class RedBlackTree:
             self.inorder_traversal(node.right, nodes_list)
 
 
+'''
+Data structure for node of Red Black Tree
+'''
+
+class RedBlackNode:
+    def __init__(self, node_value, color='red'):
+        self.key = node_value[0]
+        self.value = node_value[1]
+        self.color = color
+        self.left = None
+        self.right = None
+        self.parent = None
+
+    # Get the grandparent of node
+    def grandparent(self):
+        if self.parent is None:
+            return None
+        return self.parent.parent
+
+    # Get the sibling of node
+    def sibling(self):
+        if self.parent is None:
+            return None
+        if self == self.parent.left:
+            return self.parent.right
+        return self.parent.left
+
+    # Get the parent's sibling of node
+    def parents_sibling(self):
+        if self.parent is None:
+            return None
+        return self.parent.sibling()
 
 

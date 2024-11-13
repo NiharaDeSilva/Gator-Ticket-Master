@@ -1,7 +1,7 @@
 import sys
 import time
 from waitlist import Waitlist
-from seat_list import SeatList
+from seat_inventory import SeatInventory
 from reservation_list import ReservationList
 
 '''
@@ -9,7 +9,7 @@ This program uses a Red Black Tree and a Binary Min Heap to implement the seat r
 Supported commands are Initialize, Available, Reserve, Cancel, ExitWaitList, UpdatePriority, AddSeats, PrintReservations, ReleaseSeats, Quit.
 '''
 
-seats = SeatList()
+seats = SeatInventory()
 reservation = ReservationList()
 waitlist = Waitlist()
 
@@ -54,7 +54,7 @@ def available():
 def cancel(seatID, userID):
     if (reservation.search_reservation(userID) is not None):
         result = reservation.search_reservation(userID)
-        if result.key == seatID:
+        if result.value == seatID:
             if waitlist.is_empty():
                 reservation.remove_reservation(userID)
                 seats.add_seats(seatID)
@@ -66,7 +66,7 @@ def cancel(seatID, userID):
                 waitlist.drop_from_waitlist(new_userID[0])
                 print(f"User {userID} canceled their reservation")
                 print(f"User {new_userID[0]} reserved seat {seatID}")
-        elif ((reservation.search_reservation(userID).value != None) and (reservation.search_reservation(userID).key != seatID)):
+        elif ((reservation.search_reservation(userID).key != None) and (reservation.search_reservation(userID).value != seatID)):
             print(f"User {userID} has no reservation for seat {seatID} to cancel")
     else:
         print(f"User {userID} has no reservation to cancel")
@@ -91,7 +91,7 @@ def add_seats(count):
 def print_reservations():
     reservation_list = reservation.get_all_reservations()
     for item in reservation_list:
-        print(f"Seat {item.key}, User {item.value}")
+        print(f"Seat {item.value}, User {item.key}")
 
 
 '''
@@ -106,7 +106,7 @@ def release_seats(userID1, userID2):
         for userID in range(userID1, userID2):
             if reservation.search_reservation(userID) is not None:
                 result = reservation.search_reservation(userID)
-                seatID = result.key
+                seatID = result.value
                 seats.add_seats(seatID)
                 reservation.remove_reservation(userID)
                 count += 1
@@ -115,9 +115,9 @@ def release_seats(userID1, userID2):
                 waitlist.drop_from_waitlist(userID)
                 waitlist_released = True
         if reservations_released:
-            print(f"Reservations of the users in the range {userID1, userID2} have been released")
+            print(f"Reservations of the Users in the range {userID1, userID2} have been released")
         elif waitlist_released:
-            print(f"Waitlist of the users in the range {userID1, userID2} have been released")
+            print(f"Waitlist of the Users in the range {userID1, userID2} have been released")
         newReservations = assign_seats_to_waitlist(count)
         return newReservations
     else:
@@ -139,9 +139,9 @@ def exit_waitlist(userID):
 def update_priority(userID, userPriority):
     priority_updated = waitlist.modify_priority(userID, userPriority)
     if priority_updated:
-        print(f"User {userID} priority has been updated to {userPriority}")
+        print(f"User {userID} Priority has been updated to {userPriority}")
     else:
-        print(f"User {userID} priority is not updated")
+        print(f"User {userID} Priority is not updated")
 
 
 

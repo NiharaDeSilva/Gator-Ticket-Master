@@ -8,8 +8,8 @@ User 4 is added to the waiting list
 User 3 is added to the waiting list
 Total Seats Available : 0, Waitlist :4
 User 9 is not in waitlist
-User 6 priority is not updated
-User 3 priority has been updated to 3
+User 6 Priority is not updated
+User 3 Priority has been updated to 3
 Additional 3 Seats are made available for reservation
 User 4 reserved seat 4
 User 3 reserved seat 5
@@ -21,9 +21,9 @@ User 9 is added to the waiting list
 User 12 is added to the waiting list
 User 18 is added to the waiting list
 User 17 is added to the waiting list
-Reservations of the users in the range (6, 11) have been released
+Reservations of the Users in the range (6, 11) have been released
 User 17 reserved seat 1
-User 18 priority has been updated to 3
+User 18 Priority has been updated to 3
 Additional 2 Seats are made available for reservation
 User 18 reserved seat 7
 User 12 reserved seat 8

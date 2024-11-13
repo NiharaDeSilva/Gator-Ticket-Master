@@ -12,7 +12,7 @@ class ReservationList(RedBlackTree):
         return self.search(userID)
 
     def make_reservation(self, userID, seatID):
-        return self.insert(userID, seatID)
+        return self.insert((userID, seatID))
 
     def remove_reservation(self, userID):
         return self.delete(userID)
@@ -20,5 +20,5 @@ class ReservationList(RedBlackTree):
     def get_all_reservations(self):
         reservation_list = []
         self.inorder_traversal(self.root, reservation_list)
-        sorted_list = sorted(reservation_list, key=lambda x: x.key)
+        sorted_list = sorted(reservation_list, key=lambda x: x.value)
         return sorted_list
