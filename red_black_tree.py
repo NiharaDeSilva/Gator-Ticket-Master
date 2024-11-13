@@ -118,65 +118,65 @@ class RedBlackTree:
     This function ensures that the tree remains balanced and adheres to Red-Black rules. 
     It recolors or rotates nodes based on the color of the sibling and its children, depending on the child deleted.
     '''
-    def delete_correction(self, x):
-        while x != self.root and x is not None and x.color == 'black':
-            if x.parent:
-                if x == x.parent.left:
-                    sibling = x.sibling()
+    def delete_correction(self, node):
+        while node != self.root and node is not None and node.color == 'black':
+            if node.parent:
+                if node == node.parent.left:
+                    sibling = node.sibling()
                 else:
-                    sibling = x.sibling()
+                    sibling = node.sibling()
 
                 if sibling is None:
                     break
 
                 if sibling.color == 'red':
                     sibling.color = 'black'
-                    x.parent.color = 'red'
-                    if x == x.parent.left:
-                        self.rotate_left(x.parent)
+                    node.parent.color = 'red'
+                    if node == node.parent.left:
+                        self.rotate_left(node.parent)
                     else:
-                        self.rotate_right(x.parent)
-                    sibling = x.sibling()
+                        self.rotate_right(node.parent)
+                    sibling = node.sibling()
 
                 if sibling and (sibling.left is None or sibling.left.color == 'black') and \
                    (sibling.right is None or sibling.right.color == 'black'):
                     sibling.color = 'red'
-                    x = x.parent
+                    node = node.parent
                 else:
                     if sibling:
-                        if x == x.parent.left:
+                        if node == node.parent.left:
                             if sibling.right is None or sibling.right.color == 'black':
                                 if sibling.left:
                                     sibling.left.color = 'black'
                                 sibling.color = 'red'
                                 self.rotate_right(sibling)
-                                sibling = x.sibling()
+                                sibling = node.sibling()
 
-                            sibling.color = x.parent.color
-                            x.parent.color = 'black'
+                            sibling.color = node.parent.color
+                            node.parent.color = 'black'
                             if sibling.right:
                                 sibling.right.color = 'black'
-                            self.rotate_left(x.parent)
+                            self.rotate_left(node.parent)
                         else:
                             if sibling.left is None or sibling.left.color == 'black':
                                 if sibling.right:
                                     sibling.right.color = 'black'
                                 sibling.color = 'red'
                                 self.rotate_left(sibling)
-                                sibling = x.sibling()
+                                sibling = node.sibling()
 
-                            sibling.color = x.parent.color
-                            x.parent.color = 'black'
+                            sibling.color = node.parent.color
+                            node.parent.color = 'black'
                             if sibling.left:
                                 sibling.left.color = 'black'
-                            self.rotate_right(x.parent)
+                            self.rotate_right(node.parent)
 
-                    x = self.root
+                    node = self.root
             else:
                 break
 
-        if x:
-            x.color = 'black'
+        if node:
+            node.color = 'black'
 
     '''
     Performs a left rotation on the given node to maintain tree balance.
