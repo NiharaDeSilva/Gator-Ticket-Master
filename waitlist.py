@@ -28,7 +28,6 @@ class Waitlist(BinaryMinHeap):
         self._rebuild_heap()
         return highest_priority_item[1]
 
-
     # Drop the user matching the userID from waitlist
     def drop_from_waitlist(self, userID):
         search_result = self.search(userID)
@@ -73,5 +72,10 @@ class Waitlist(BinaryMinHeap):
         list = self.get_waitlist()
         sortedList = sorted(list, key=lambda x: (-x[1], x[2]))
         return sortedList
+
+
+
+
+
 
 
